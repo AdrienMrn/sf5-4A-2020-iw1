@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\BookRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BookRepository::class)
+ * @ORM\Table(schema="iw")
  */
 class Book
 {
@@ -36,6 +39,21 @@ class Book
      * @ORM\Column(type="float", nullable=true)
      */
     private $averagePrice;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="books")
+     */
+    private $creator;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="books")
+     */
+    private $tags;
+
+    public function __construct()
+    {
+        $this->tags = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +104,44 @@ class Book
     public function setAveragePrice(?float $averagePrice): self
     {
         $this->averagePrice = $averagePrice;
+
+        return $this;
+    }
+
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): self
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        if ($this->tags->contains($tag)) {
+            $this->tags->removeElement($tag);
+        }
 
         return $this;
     }

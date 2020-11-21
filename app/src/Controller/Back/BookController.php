@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Back;
 
 use App\Entity\Book;
 use App\Form\BookType;
 use App\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,8 +25,18 @@ class BookController extends AbstractController
      */
     public function index(BookRepository $bookRepository)
     {
-        return $this->render('book/index.html.twig', [
+        return $this->render('back/book/index.html.twig', [
             'books' => $bookRepository->findAll()
+        ]);
+    }
+
+    /**
+     * @Route("/search/{q}", name="search", methods={"GET"})
+     */
+    public function search($q, BookRepository $bookRepository)
+    {
+        return $this->render('back/book/search.html.twig', [
+            'books' => $bookRepository->search($q, true)
         ]);
     }
 
@@ -36,7 +47,7 @@ class BookController extends AbstractController
      */
     public function show(Book $book)
     {
-        return $this->render('book/show.html.twig', [
+        return $this->render('back/book/show.html.twig', [
             'book' => $book
         ]);
     }
@@ -52,16 +63,15 @@ class BookController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-
             $em->persist($book);
             $em->flush();
 
-            return $this->redirectToRoute('book_show', [
+            return $this->redirectToRoute('admin_book_show', [
                 'id' => $book->getId()
             ]);
         }
 
-        return $this->render('book/new.html.twig', [
+        return $this->render('back/book/new.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -75,17 +85,32 @@ class BookController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('book_edit', [
+            return $this->redirectToRoute('admin_book_edit', [
                 'id' => $book->getId()
             ]);
         }
 
-        return $this->render('book/edit.html.twig', [
+        return $this->render('back/book/edit.html.twig', [
             'form' => $form->createView(),
             'book' => $book
         ]);
+    }
+
+    /**
+     * @Route("/delete/{id}/{token}", name="delete", methods={"GET"})
+     */
+    public function delete(Book $book, $token)
+    {
+        if (!$this->isCsrfTokenValid('delete_book' . $book->getName(), $token)) {
+            throw new Exception('Invalid CSRF Token');
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($book);
+        $em->flush();
+
+        return $this->redirectToRoute('admin_book_index');
     }
 }
