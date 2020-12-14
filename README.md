@@ -52,3 +52,13 @@ composer require --dev doctrine/doctrine-fixtures-bundle
 docker-compose exec php bin/console make:fixtures
 php bin/console doctrine:fixtures:load
 ```
+
+##Creation d'auth 
+``` 
+docker-compose exec php bin/console make:user 
+// changer au sein de l'entity user les règles de votre table 
+@ORM\Table(name="user_account", schema="PROJECT_NAME") 
+
+docker-compose exec php bin/console make:auth 
+docker-compose exec php bin/console security:encode-password 
+```

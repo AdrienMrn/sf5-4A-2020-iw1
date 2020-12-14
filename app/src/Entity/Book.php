@@ -47,6 +47,7 @@ class Book
 
     /**
      * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="books")
+     * @ORM\JoinTable(schema="iw")
      */
     private $tags;
 
