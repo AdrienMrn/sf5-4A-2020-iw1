@@ -1,0 +1,10 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_rest(form) }}
+        <input type="submit" value="Register">
+    {{ form_end(form) }}
+{% endblock %}
