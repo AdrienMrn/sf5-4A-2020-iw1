@@ -27,6 +27,7 @@ class BookFixtures extends Fixture implements DependentFixtureInterface
                 ->setAveragePrice($faker->numberBetween(5, 40))
                 ->setPublicationDate($faker->dateTime)
                 ->setCreator($users[array_rand($users)])
+                ->setUpdatedAt($faker->dateTime)
                 ->addTag($tags[0])
                 ->addTag($tags[1])
             ;

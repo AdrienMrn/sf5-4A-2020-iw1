@@ -7,6 +7,7 @@
 
     Average Price : {{ book.averagePrice ? book.averagePrice : "NC" }} <br>
     Description : {{ book.description ? book.description : "NC" }} <br>
+    <img src="{{ vich_uploader_asset(book, 'imageFile') }}" alt="{{ book.name }}" /> <br>
     <br>
     <a href="{{ path('admin_book_edit', {id: book.id}) }}">Editer</a> <br>
     <br>
