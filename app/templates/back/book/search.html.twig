@@ -15,7 +15,7 @@
                         Tags : {% for tag in book.tags %}{{ tag.name }} - {% endfor %}
                     </div>
                     <div class="card-action">
-                        <a href="{{ path('admin_book_show', {id: book.id}) }}">Voir</a>
+                        <a href="{{ path('admin_book_show', {slug: book.slug}) }}">Voir</a>
                     </div>
                 </div>
             </div>

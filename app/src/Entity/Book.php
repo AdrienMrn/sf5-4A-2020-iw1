@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\SortableTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass=BookRepository::class)
@@ -16,6 +19,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Book
 {
+    use TimestampableTrait;
+    use SortableTrait;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,6 +33,12 @@ class Book
      * @ORM\Column(type="string", length=255)
      */
     private $name;
+
+    /**
+     * @Gedmo\Slug(fields={"name"})
+     * @ORM\Column(type="string", unique=true)
+     */
+    private $slug;
 
     /**
      * @ORM\Column(type="datetimetz", nullable=true)
@@ -55,10 +67,11 @@ class Book
     private $imageFile;
 
     /**
-     * @ORM\Column(type="datetime", options={"default": "NOW()"})
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="change", field={"name"})
      * @var \DateTime
      */
-    private $updatedAt;
+    private $updatedName;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="books")
@@ -91,6 +104,24 @@ class Book
     {
         $this->name = $name;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param mixed $slug
+     * @return Book
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
         return $this;
     }
 
@@ -194,22 +225,21 @@ class Book
         return $this->imageFile;
     }
 
-
     /**
      * @return \DateTime
      */
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedName(): \DateTime
     {
-        return $this->updatedAt;
+        return $this->updatedName;
     }
 
     /**
-     * @param \DateTime $updatedAt
+     * @param \DateTime $updatedName
      * @return Book
      */
-    public function setUpdatedAt(\DateTime $updatedAt): Book
+    public function setUpdatedName(\DateTime $updatedName): Book
     {
-        $this->updatedAt = $updatedAt;
+        $this->updatedName = $updatedName;
         return $this;
     }
 }

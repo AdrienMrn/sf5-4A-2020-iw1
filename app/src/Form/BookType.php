@@ -44,15 +44,6 @@ class BookType extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'email'
             ])
-            ->add('gender', ChoiceType::class, [
-                'mapped' => false,
-                'choices' => [
-                    'Monsieurs' => 'm',
-                    'Madmame' => 'f',
-                ],
-                'multiple' => false,
-                'expanded' => true
-            ])
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'allow_delete' => true,

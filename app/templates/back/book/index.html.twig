@@ -16,7 +16,9 @@
                         Average Price : {{ book.averagePrice }} <br>
                     </div>
                     <div class="card-action">
-                        <a href="{{ path('admin_book_show', {id: book.id}) }}">Voir</a>
+                        <a href="{{ path('admin_book_sortable', {slug: book.slug, sortable: 'up'}) }}">Up</a>
+                        <a href="{{ path('admin_book_sortable', {slug: book.slug, sortable: 'up'}) }}">Down</a>
+                        <a href="{{ path('admin_book_show', {slug: book.slug}) }}">Voir</a>
                         <a href="{{ path('admin_book_edit', {id: book.id}) }}">Editer</a>
                         <a href="{{ path('admin_book_delete', {id: book.id, token: csrf_token('delete_book' ~ book.name)}) }}" class="red-text">Supprimer</a>
                     </div>

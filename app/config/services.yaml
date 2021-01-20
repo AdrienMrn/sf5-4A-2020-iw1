@@ -32,3 +32,6 @@ services:
     App\EventListener\UserSubscriber:
         tags:
             - { name: 'doctrine.event_subscriber' }
+
+    App\EventListener\LocaleSubscriber:
+        arguments: [ '%kernel.default_locale%' ]

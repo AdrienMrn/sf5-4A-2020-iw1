@@ -7,6 +7,7 @@ use App\Form\BookType;
 use App\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Config\Definition\Exception\Exception;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -25,8 +26,10 @@ class BookController extends AbstractController
      */
     public function index(BookRepository $bookRepository)
     {
+        $this->get('session')->set('_locale', 'fr');
+
         return $this->render('back/book/index.html.twig', [
-            'books' => $bookRepository->findAll()
+            'books' => $bookRepository->findBy([], ['position' => 'ASC'])
         ]);
     }
 
@@ -41,7 +44,7 @@ class BookController extends AbstractController
     }
 
     /**
-     * @Route("/show/{id}", name="show", methods={"GET"})
+     * @Route("/show/{slug}", name="show", methods={"GET"})
      *
      * Call Book with ParamConverter
      */
@@ -66,8 +69,10 @@ class BookController extends AbstractController
             $em->persist($book);
             $em->flush();
 
+            $this->addFlash('green', 'Création effectuée');
+
             return $this->redirectToRoute('admin_book_show', [
-                'id' => $book->getId()
+                'slug' => $book->getSlug()
             ]);
         }
 
@@ -86,6 +91,8 @@ class BookController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
+
+            $this->addFlash('green', 'Modification effectuée');
 
             return $this->redirectToRoute('admin_book_edit', [
                 'id' => $book->getId()
@@ -109,6 +116,20 @@ class BookController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
         $em->remove($book);
+        $em->flush();
+
+        $this->addFlash('green', 'Suppression effectuée');
+
+        return $this->redirectToRoute('admin_book_index');
+    }
+
+    /**
+     * @Route("/sortable/{slug}/{sortable}", name="sortable", methods={"GET"}, requirements={"sortable"="up|down"})
+     */
+    public function sortable(Book $book, $sortable)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $book->setPosition($sortable === 'up' ? $book->getPosition()+1 :$book->getPosition()-1);
         $em->flush();
 
         return $this->redirectToRoute('admin_book_index');

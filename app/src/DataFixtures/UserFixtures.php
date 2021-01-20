@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 class UserFixtures extends Fixture
 {
     // const PWD = test
-    private const PWD = '$argon2id$v=19$m=65536,t=4,p=1$rKB0PNfQjtI/ZBgy+Ia98Q$YvF9EZJ2pQuRFugi9BibV68gjAB8tRqAcbXYjLpnjKY';
+    private const PWD = '$argon2id$v=19$m=65536,t=4,p=1$kEOrN5c9/jAtfTmWWwdgqw$ZmZuVlQSkIWNwfUIuxUfTQKH/Pz28gznYeVVCTwbkq4';
 
     public function load(ObjectManager $manager)
     {

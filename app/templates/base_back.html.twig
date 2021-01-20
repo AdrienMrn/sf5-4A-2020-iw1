@@ -3,24 +3,36 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
     </head>
     <body>
         <nav>
             <div class="nav-wrapper">
                 <a href="#" class="brand-logo">Logo</a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
-                    <li><a href="{{ path('default_index') }}">Accueil</a></li>
-                    <li><a href="{{ path('admin_book_index') }}">Books</a></li>
+                    <li><a href="{{ path('default_index') }}">{{ 'home'|trans|capitalize }}</a></li>
+                    <li><a href="{{ path('admin_book_index') }}">{{ 'books'|trans|capitalize }}</a></li>
                 </ul>
             </div>
         </nav>
 
         <div class="container">
+            Calcul area : {{ area(10, 5) }}
             {% block body %}{% endblock %}
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        M.toast({html: '{{ message }}', classes: '{{ label }}'});
+                    {% endfor %}
+                {% endfor %}
+            });
+        </script>
     </body>
 </html>
