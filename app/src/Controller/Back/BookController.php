@@ -5,6 +5,8 @@ namespace App\Controller\Back;
 use App\Entity\Book;
 use App\Form\BookType;
 use App\Repository\BookRepository;
+use App\Security\BookVoter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
@@ -83,9 +85,12 @@ class BookController extends AbstractController
 
     /**
      * @Route("/edit/{id}", name="edit", methods={"GET", "POST"})
+     * @IsGranted(BookVoter::EDIT, subject="book")
      */
     public function edit(Book $book, Request $request)
     {
+        //$this->denyAccessUnlessGranted(BookVoter::EDIT, $book);
+
         $form = $this->createForm(BookType::class, $book);
 
         $form->handleRequest($request);
@@ -110,6 +115,8 @@ class BookController extends AbstractController
      */
     public function delete(Book $book, $token)
     {
+        $this->denyAccessUnlessGranted(BookVoter::DELETE, $book);
+
         if (!$this->isCsrfTokenValid('delete_book' . $book->getName(), $token)) {
             throw new Exception('Invalid CSRF Token');
         }
