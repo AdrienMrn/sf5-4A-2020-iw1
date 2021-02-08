@@ -7,7 +7,10 @@ use App\Entity\Tag;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -20,13 +23,16 @@ class BookType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('name', TextType::class, [
+        if ($options['new']) {
+            $builder->add('name', TextType::class, [
                 'label' => 'Nom'
-            ])
-            ->add('publicationDate', DateTimeType::class, [
-                'date_widget' => 'single_text',
-                'time_widget' => 'single_text'
+            ]);
+        }
+
+        $builder
+            ->add('publicationDate', CheckboxType::class, [
+                'label' => 'Publier ce livre ?',
+                'required' => false
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description'
@@ -35,10 +41,10 @@ class BookType extends AbstractType
                 'label' => 'Prix moyen',
                 'required' => false
             ])
-            ->add('tags', EntityType::class, [
-                'class' => Tag::class,
-                'choice_label' => 'name',
-                'multiple' => true
+            ->add('tags', CollectionType::class, [
+                'entry_type' => TagType::class,
+                'entry_options' => ['label' => false],
+                'allow_add' => true,
             ])
             ->add('creator', EntityType::class, [
                 'class' => User::class,
@@ -51,12 +57,28 @@ class BookType extends AbstractType
                 'image_uri' => true
             ])
         ;
+
+        $builder->get('publicationDate')
+            ->addModelTransformer(new CallbackTransformer(
+                // Datetime to boolean
+                function ($publicationDateToBoolean) {
+                    // transform the array to a string
+                    return $publicationDateToBoolean ? true : false;
+                },
+                // Boolean to Datetime
+                function ($publicationDateToDatetime) {
+                    // transform the string back to an array
+                    return $publicationDateToDatetime ? new \DateTime() : null;
+                }
+            ))
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => Book::class,
+            'new' => false
         ]);
     }
 }
